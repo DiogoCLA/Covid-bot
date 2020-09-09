@@ -10,38 +10,38 @@ numCasos = 0
 # responsePais = urllib.request.urlopen(urlPais)
 # dataPais = json.loads(responsePais.read())
 
-print("Getting data")
-""" Get Information from the states """
-urlEstado = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalEstado"
-responseEstado = urllib.request.urlopen(urlEstado)
-dataEstado = json.loads(responseEstado.read())
-
-"""Find specific information for RN"""
-for i in dataEstado:
-    if i['_id'] == 'RN':
-        casosRN = i['casosAcumulado']
-        obitosRN = i['obitosAcumulado']
-        break
-
-"""Get information from the cities"""
-urlCidade = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio"
-responseCidade = urllib.request.urlopen(urlCidade)
-dataCidade = json.loads(responseCidade.read())
-
-"""Get specific information from Natal and Mossoró"""
-for i in dataCidade:
-    if i['_id'] == 'Natal':
-        casosNatal = i['casosAcumulado']
-        obitosNatal = i['obitosAcumulado']
-
-    if i['_id'] == 'Mossoró':
-        casosMossoro = i['casosAcumulado']
-        obitosMossoro = i['obitosAcumulado']
-
-        break
-
 """forever"""
 while True:
+    print("Getting data")
+    """ Get Information from the states """
+    urlEstado = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalEstado"
+    responseEstado = urllib.request.urlopen(urlEstado)
+    dataEstado = json.loads(responseEstado.read())
+
+    """Find specific information for RN"""
+    for i in dataEstado:
+        if i['_id'] == 'RN':
+            casosRN = i['casosAcumulado']
+            obitosRN = i['obitosAcumulado']
+            break
+
+    """Get information from the cities"""
+    urlCidade = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio"
+    responseCidade = urllib.request.urlopen(urlCidade)
+    dataCidade = json.loads(responseCidade.read())
+
+    """Get specific information from Natal and Mossoró"""
+    for i in dataCidade:
+        if i['_id'] == 'Natal':
+            casosNatal = i['casosAcumulado']
+            obitosNatal = i['obitosAcumulado']
+
+        if i['_id'] == 'Mossoró':
+            casosMossoro = i['casosAcumulado']
+            obitosMossoro = i['obitosAcumulado']
+
+            break
+
     if numCasos != casosRN:
         # Authenticate to Twitter
         auth = tweepy.OAuthHandler("FPOBGYWC4royZB80Dichq0yRP",
