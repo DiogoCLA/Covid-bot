@@ -4,7 +4,9 @@ import urllib.request
 import json
 import os
 
-numCasos = 0
+numCasosRN = 0
+numCasosNatal = 0
+numCasosMossoro = 0
 
 # urlPais = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalGeralApi"
 # responsePais = urllib.request.urlopen(urlPais)
@@ -42,26 +44,36 @@ while True:
 
             break
 
-    if numCasos != casosRN:
-        # Authenticate to Twitter
-        auth = tweepy.OAuthHandler("FPOBGYWC4royZB80Dichq0yRP",
-                                   os.environ['APISECRETKEY'])
-        auth.set_access_token("1290022466002321413-ylhFNcnnukDJMqEYkA2i45g6EmQ40s",
-                              os.environ['ACCESSTOKENSECRET'])
+    diffRN = casosRN - numCasosRN
+    diffNatal = casosNatal - numCasosNatal
+    diffMossoro = casosMossoro - numCasosMossoro
+    if diffRN > 0:
+        if diffNatal > 0:
+            if diffMossoro > 0:
+                # Authenticate to Twitter
+                auth = tweepy.OAuthHandler("FPOBGYWC4royZB80Dichq0yRP",
+                                           os.environ['APISECRETKEY'])
+                auth.set_access_token("1290022466002321413-ylhFNcnnukDJMqEYkA2i45g6EmQ40s",
+                                      os.environ['ACCESSTOKENSECRET'])
 
-        # Create API object
-        api = tweepy.API(auth, wait_on_rate_limit=True,
-                         wait_on_rate_limit_notify=True)
+                # Create API object
+                api = tweepy.API(auth, wait_on_rate_limit=True,
+                                 wait_on_rate_limit_notify=True)
 
-        string = "Casos Confirmados no RN: " + str(casosRN) + "\nCasos Confirmados em Natal: "
-        string = string + str(casosNatal) + "\nCasos Confirmados em Mossoró: " + str(casosMossoro)
+                string = "Casos Confirmados no RN: " + str(casosRN) + "(+" + str(
+                    diffRN) + ")" + "\nCasos Confirmados em Natal: "
+                string = string + str(casosNatal) + "(+" + str(
+                    diffNatal) + ")" + "\nCasos Confirmados em Mossoró: " + str(casosMossoro) + "(+" + str(
+                    diffMossoro) + ")"
 
-        # post it to twitter
-        print ("updating cases")
-        api.update_status(string)
+                # post it to twitter
+                print("updating cases")
+                api.update_status(string)
 
-        numCasos = casosRN
+                numCasosRN = casosRN
+                numCasosNatal = casosNatal
+                numCasosMossoro = casosMossoro
 
     else:
         print("no change")
-    time.sleep(3600)
+    time.sleep(28800)
