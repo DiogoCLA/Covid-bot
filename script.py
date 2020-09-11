@@ -4,76 +4,82 @@ import urllib.request
 import json
 import os
 
-numCasosRN = 0
-numCasosNatal = 0
-numCasosMossoro = 0
 
-# urlPais = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalGeralApi"
-# responsePais = urllib.request.urlopen(urlPais)
-# dataPais = json.loads(responsePais.read())
+def main():
+    numCasosRN = 0
+    numCasosNatal = 0
+    numCasosMossoro = 0
 
-"""forever"""
-while True:
-    print("Getting data")
-    """ Get Information from the states """
-    urlEstado = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalEstado"
-    responseEstado = urllib.request.urlopen(urlEstado)
-    dataEstado = json.loads(responseEstado.read())
+    # urlPais = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalGeralApi"
+    # responsePais = urllib.request.urlopen(urlPais)
+    # dataPais = json.loads(responsePais.read())
 
-    """Find specific information for RN"""
-    for i in dataEstado:
-        if i['_id'] == 'RN':
-            casosRN = i['casosAcumulado']
-            obitosRN = i['obitosAcumulado']
-            break
+    """forever"""
+    while True:
+        print("Getting data")
+        """ Get Information from the states """
+        urlEstado = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalEstado"
+        responseEstado = urllib.request.urlopen(urlEstado)
+        dataEstado = json.loads(responseEstado.read())
 
-    """Get information from the cities"""
-    urlCidade = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio"
-    responseCidade = urllib.request.urlopen(urlCidade)
-    dataCidade = json.loads(responseCidade.read())
+        """Find specific information for RN"""
+        for i in dataEstado:
+            if i['_id'] == 'RN':
+                casosRN = i['casosAcumulado']
+                obitosRN = i['obitosAcumulado']
+                break
 
-    """Get specific information from Natal and Mossoró"""
-    for i in dataCidade:
-        if i['_id'] == 'Natal':
-            casosNatal = i['casosAcumulado']
-            obitosNatal = i['obitosAcumulado']
+        """Get information from the cities"""
+        urlCidade = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio"
+        responseCidade = urllib.request.urlopen(urlCidade)
+        dataCidade = json.loads(responseCidade.read())
 
-        if i['_id'] == 'Mossoró':
-            casosMossoro = i['casosAcumulado']
-            obitosMossoro = i['obitosAcumulado']
+        """Get specific information from Natal and Mossoró"""
+        for i in dataCidade:
+            if i['_id'] == 'Natal':
+                casosNatal = i['casosAcumulado']
+                obitosNatal = i['obitosAcumulado']
 
-            break
+            if i['_id'] == 'Mossoró':
+                casosMossoro = i['casosAcumulado']
+                obitosMossoro = i['obitosAcumulado']
 
-    diffRN = casosRN - numCasosRN
-    diffNatal = casosNatal - numCasosNatal
-    diffMossoro = casosMossoro - numCasosMossoro
-    if diffRN > 0:
-        if diffNatal > 0:
-            if diffMossoro > 0:
-                # Authenticate to Twitter
-                auth = tweepy.OAuthHandler("FPOBGYWC4royZB80Dichq0yRP",
-                                           os.environ['APISECRETKEY'])
-                auth.set_access_token("1290022466002321413-ylhFNcnnukDJMqEYkA2i45g6EmQ40s",
-                                      os.environ['ACCESSTOKENSECRET'])
+                break
 
-                # Create API object
-                api = tweepy.API(auth, wait_on_rate_limit=True,
-                                 wait_on_rate_limit_notify=True)
+        diffRN = casosRN - numCasosRN
+        diffNatal = casosNatal - numCasosNatal
+        diffMossoro = casosMossoro - numCasosMossoro
+        if 0 < diffRN < 10000:
+            if 0 < diffNatal < 10000:
+                if 0 < diffMossoro < 5000:
+                    # Authenticate to Twitter
+                    auth = tweepy.OAuthHandler("FPOBGYWC4royZB80Dichq0yRP",
+                                               os.environ['APISECRETKEY'])
+                    auth.set_access_token("1290022466002321413-ylhFNcnnukDJMqEYkA2i45g6EmQ40s",
+                                          os.environ['ACCESSTOKENSECRET'])
 
-                string = "Casos Confirmados no RN: " + str(casosRN) + "(+" + str(
-                    diffRN) + ")" + "\nCasos Confirmados em Natal: "
-                string = string + str(casosNatal) + "(+" + str(
-                    diffNatal) + ")" + "\nCasos Confirmados em Mossoró: " + str(casosMossoro) + "(+" + str(
-                    diffMossoro) + ")"
+                    # Create API object
+                    api = tweepy.API(auth, wait_on_rate_limit=True,
+                                     wait_on_rate_limit_notify=True)
 
-                # post it to twitter
-                print("updating cases")
-                api.update_status(string)
+                    string = "Casos Confirmados no RN: " + str(casosRN) + "(+" + str(
+                        diffRN) + ")" + "\nCasos Confirmados em Natal: "
+                    string = string + str(casosNatal) + "(+" + str(
+                        diffNatal) + ")" + "\nCasos Confirmados em Mossoró: " + str(casosMossoro) + "(+" + str(
+                        diffMossoro) + ")"
 
-                numCasosRN = casosRN
-                numCasosNatal = casosNatal
-                numCasosMossoro = casosMossoro
+                    # post it to twitter
+                    print("updating cases")
+                    api.update_status(string)
 
-    else:
-        print("no change")
-    time.sleep(28800)
+        else:
+            print("no change")
+
+        numCasosRN = casosRN
+        numCasosNatal = casosNatal
+        numCasosMossoro = casosMossoro
+
+        time.sleep(28800)
+
+
+main()
